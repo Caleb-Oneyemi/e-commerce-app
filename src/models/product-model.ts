@@ -20,8 +20,8 @@ const productSchema = new mongoose.Schema(
       type: Number,
       required: 'Price is required',
     },
-    images: {
-      type: [String],
+    image: {
+      type: String,
     },
     store: {
       type: mongoose.Schema.Types.ObjectId,

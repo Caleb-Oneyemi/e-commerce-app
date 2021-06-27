@@ -1,7 +1,6 @@
 import { Request, Response } from 'express';
 import Joi from 'joi';
 import Product from '../models/product-model';
-import Store from '../models/store-model';
 
 type TOrderType = [{ product: string; quantity: string }];
 
@@ -19,7 +18,7 @@ const createProduct = async (req: Request, res: Response) => {
     const err = productData.error.details[0].message;
 
     return res.status(400).json({
-      error: err.split('\"').join(''),
+      error: err.split('"').join(''),
     });
   }
 
@@ -44,14 +43,6 @@ const createProduct = async (req: Request, res: Response) => {
 
 const getProductsByStoreId = async (req: Request, res: Response) => {
   try {
-    const store = Store.findById(req.params.storeId);
-
-    if (store.merchant !== req.user._id) {
-      return res.status(403).json({
-        error: 'Merchant is not authorized to view these products',
-      });
-    }
-
     const products = await Product.find({ store: req.params.storeId })
       .sort('-createdAt')
       .limit(10)
@@ -67,17 +58,14 @@ const getProductsByStoreId = async (req: Request, res: Response) => {
 
 const getProductById = async (req: Request, res: Response) => {
   try {
-    const product = await Product.findById(req.params.id);
+    const product = await Product.findById(req.params.id).populate(
+      'merchant',
+      '_id, email'
+    );
 
     if (!product) {
       return res.status(404).json({
         error: 'Product not found',
-      });
-    }
-
-    if (product.merchant !== req.user._id) {
-      return res.status(403).json({
-        error: 'Merchant is not authorized to view this product',
       });
     }
 
@@ -91,6 +79,13 @@ const getProductById = async (req: Request, res: Response) => {
 
 const updateProduct = async (req: Request, res: Response) => {
   const updates = Object.keys(req.body);
+
+  if (updates.length === 0) {
+    return res.status(400).send({
+      error: 'At least one field must be updated',
+    });
+  }
+
   try {
     const product = await Product.findById(req.params.id);
 
@@ -100,15 +95,11 @@ const updateProduct = async (req: Request, res: Response) => {
       });
     }
 
-    if (product.merchant !== req.user._id) {
-      return res.status(403).json({
-        error: 'Merchant is not authorized to update this product',
-      });
-    }
-
     updates.forEach((field) => (product[field] = req.body[field]));
     await product.save();
-    res.status(200).json(product);
+    res.status(200).json({
+      message: 'Product updated successfully'
+    });
   } catch (err) {
     res.status(400).json({
       error: err.message,
@@ -126,12 +117,6 @@ const removeProduct = async (req: Request, res: Response) => {
       });
     }
 
-    if (product.merchant !== req.user._id) {
-      return res.status(403).json({
-        error: 'Merchant is not authorized to remove this product',
-      });
-    }
-
     await product.remove();
     res.status(200).json(product);
   } catch (err) {
@@ -141,10 +126,9 @@ const removeProduct = async (req: Request, res: Response) => {
   }
 };
 
-const uploadProductImages = async (req: Request, res: Response) => {
+const uploadProductImage = async (req: Request, res: Response) => {
   try {
     const product = await Product.findById(req.params.productId);
-    console.log('p', product)
 
     if (!product) {
       return res.status(404).json({
@@ -152,20 +136,7 @@ const uploadProductImages = async (req: Request, res: Response) => {
       });
     }
 
-    if (product.merchant !== req.user._id) {
-      return res.status(403).json({
-        error: 'Merchant is not authorized to upload images for this product',
-      });
-    }
-
-    const file: any = req.file;
-    if (product.images.length === 5) {
-      return res.status(400).json({
-        error: 'Only 5 images per Product'
-      });
-    }
-
-    product.images.push(file.path);
+    product.image = req.body.url;
     await product.save();
     res.status(200).json({
       message: 'product image uploaded',
@@ -204,7 +175,7 @@ export {
   getProductById,
   updateProduct,
   removeProduct,
-  uploadProductImages,
+  uploadProductImage,
   increaseProductQuantities,
   decreaseProductQuantities,
 };

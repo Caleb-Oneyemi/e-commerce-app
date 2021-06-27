@@ -67,9 +67,13 @@ const orderSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
-    merchant: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: 'User',
+    merchantEmail: {
+      type: String,
+      validate(email: string) {
+        if (!validator.isEmail(email)) {
+          throw new Error('invalid email');
+        }
+      },
     },
   },
   {

@@ -29,7 +29,7 @@ const storeSchema = new mongoose.Schema(
       type: String,
     },
     customers: {
-      type: mongoose.Schema.Types.Mixed,
+      type: [String]
     },
     merchant: {
       type: mongoose.Schema.Types.ObjectId,

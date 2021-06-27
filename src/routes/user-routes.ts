@@ -3,13 +3,13 @@ import { isAuthenticated } from '../middleware/auth';
 import {
   createMerchant,
   getMerchant,
+  getMerchantById,
   updateMerchant,
   deleteMerchant,
   changePassword,
   uploadImage,
   confirmMerchant
 } from '../controllers/user-controller';
-import { parser } from '../middleware/upload-img';
 
 const router = express.Router();
 
@@ -20,11 +20,12 @@ router.post('/api/users/changepass', isAuthenticated, changePassword);
 router.post(
   '/api/users/me/image',
   isAuthenticated,
-  parser.single('image'),
   uploadImage
 );
 
 router.get('/api/users/me', isAuthenticated, getMerchant);
+
+router.get('/api/users/:id', getMerchantById);
 
 router.get('/api/users/confirm/:userId', confirmMerchant);
 

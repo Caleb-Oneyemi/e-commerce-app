@@ -6,24 +6,22 @@ import {
   getProductById,
   updateProduct,
   removeProduct,
-  uploadProductImages
+  uploadProductImage
 } from '../controllers/product-controller';
-import { parser } from '../middleware/upload-img';
 
 const router = express.Router();
 
 router.post('/api/products/:storeId', isAuthenticated, createProduct);
 
 router.post(
-  '/api/products/:productId/images',
+  '/api/products/:productId/image',
   isAuthenticated,
-  parser.single('image'),
-  uploadProductImages
+  uploadProductImage
 );
 
 router.get('/api/products/store/:storeId', isAuthenticated, getProductsByStoreId);
 
-router.get('/api/products/:id', isAuthenticated, getProductById);
+router.get('/api/products/:id', getProductById);
 
 router.patch('/api/products/:id', isAuthenticated, updateProduct);
 

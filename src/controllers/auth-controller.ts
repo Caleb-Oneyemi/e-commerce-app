@@ -22,10 +22,11 @@ const signin = async (req: Request, res: Response) => {
 
     const secret = process.env.JWT_SECRET as string;
     const token = jwt.sign({ _id: user._id }, secret);
-    const expires = Number(new Date()) + 604800000;
+    console.log(token);
 
     res.cookie('mc', token, {
-      expires: new Date(expires),
+      maxAge: 604800000,
+      httpOnly: false,
     });
 
     res.status(200).json({ user, token });

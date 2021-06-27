@@ -19,7 +19,7 @@ router.get('/api/orders/store/:storeId', isAuthenticated, getOrdersByStoreId);
 
 router.get('/api/orders/:id', isAuthenticated, getOrderById);
 
-router.get('/api/orders/tid/:tid', getOrderByTrackingId);
+router.post('/api/orders/tid/:tid', getOrderByTrackingId);
 
 router.post(
   '/api/orders/customer/:storeId',

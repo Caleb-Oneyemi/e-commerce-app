@@ -2,6 +2,7 @@ import { Request, Response } from 'express';
 import Joi from 'joi';
 import bcrypt from 'bcryptjs';
 import User from '../models/user-model';
+import { sendMail } from '../services/email-service';
 
 const userSchema = Joi.object({
   firstName: Joi.string().min(3).max(30).required(),
@@ -25,9 +26,14 @@ const createMerchant = async (req: Request, res: Response) => {
   const user = new User(userData.value);
 
   try {
+    const subject = 'Welcome to Maestro';
+    const text = `We're really glad to have you on board, please visit ${process.env.URL}/api/users/confirm/${user._id} to confirm your mail`;
+
     await user.save();
+
+    await sendMail(user.email, subject, text);
     res.status(201).json({
-      message: 'user signup successful',
+      message: 'signup successful',
     });
   } catch (err) {
     res.status(400).json({
@@ -40,8 +46,31 @@ const getMerchant = async (req: Request, res: Response) => {
   return res.status(200).send(req.user);
 };
 
+const getMerchantById = async (req: Request, res: Response) => {
+  try {
+    const user = await User.findById(req.params.id);
+
+    if (!user) {
+      return res.status(404).json({
+        error: 'Merchant not found',
+      });
+    }
+
+    res.status(200).json({ email: user.email });
+  } catch (err) {
+    res.status(400).json({
+      error: err.message,
+    });
+  }
+};
+
 const updateMerchant = async (req: Request, res: Response) => {
   const updates = Object.keys(req.body);
+  if (updates.length === 0) {
+    return res.status(400).send({
+      error: 'At least one field must be updated',
+    });
+  }
 
   try {
     updates.forEach((field) => {
@@ -51,7 +80,9 @@ const updateMerchant = async (req: Request, res: Response) => {
     });
     await req.user.save();
 
-    res.status(200).send(req.user);
+    res.status(200).send({
+      message: 'Account updated successfully',
+    });
   } catch (err) {
     res.status(400).json({
       error: err.message,
@@ -73,8 +104,15 @@ const deleteMerchant = async (req: Request, res: Response) => {
 const changePassword = async (req: Request, res: Response) => {
   const { oldPassword, newPassword, confirmedPassword } = req.body;
 
+  if (!oldPassword || !newPassword || !confirmedPassword) {
+    return res.status(401).json({
+      error: 'fields cannot be epmty',
+    });
+  }
+
   try {
-    const isMatch = await bcrypt.compare(oldPassword, req.user.password);
+    const user = await User.findById(req.user._id);
+    const isMatch = await bcrypt.compare(oldPassword, user.password);
 
     if (!isMatch) {
       return res.status(401).json({
@@ -102,12 +140,11 @@ const changePassword = async (req: Request, res: Response) => {
 
 const uploadImage = async (req: Request, res: Response) => {
   try {
-    const file: any = req.file;
-    req.user.image = file.path;
+    req.user.image = req.body.url;
     await req.user.save();
     res.status(200).json({
-      message: 'user profile image uploaded'
-    })
+      message: 'user profile image uploaded',
+    });
   } catch (err) {
     res.status(400).send({
       error: err.message,
@@ -118,25 +155,26 @@ const uploadImage = async (req: Request, res: Response) => {
 const confirmMerchant = async (req: Request, res: Response) => {
   try {
     const user = await User.findById(req.params.userId);
-    user.confirmed = true
+    user.confirmed = true;
     await user.save();
 
     res.status(200).json({
-      message: 'user account confirmed successfully'
-    })
+      message: 'user account confirmed successfully',
+    });
   } catch (err) {
     res.status(400).send({
       error: err.message,
     });
   }
-}
+};
 
 export {
   createMerchant,
   getMerchant,
+  getMerchantById,
   updateMerchant,
   deleteMerchant,
   changePassword,
   uploadImage,
-  confirmMerchant
+  confirmMerchant,
 };

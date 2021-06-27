@@ -37,6 +37,13 @@ app.use(helmet());
 app.use(cors());
 app.use(logger('dev'));
 
+app.use(
+  cors({
+    origin: process.env.FRONTEND_URL,
+    credentials: true,
+  })
+);
+
 passport.use(config);
 passport.serializeUser((user: any, done) => {
   done(null, user.id);

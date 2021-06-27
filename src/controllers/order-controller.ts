@@ -12,6 +12,7 @@ const orderSchema = Joi.object({
   phoneNumber: Joi.string().length(14).required(),
   address: Joi.string().required(),
   orderItems: Joi.array().required(),
+  merchantEmail: Joi.string()
 });
 
 const createOrder = async (req: Request, res: Response) => {
@@ -30,11 +31,11 @@ const createOrder = async (req: Request, res: Response) => {
       ...req.body,
       store: req.params.storeId,
       tid: nanoid(8),
-    });
+    })
 
     const customer = await Customer.findOne({ email: orderData.value.email });
 
-    await handleOrder(customer, orderData.value, req.params.storeId);
+    await handleOrder(customer, order, req.params.storeId);
     await order.save();
     res.status(201).json(order);
   } catch (err) {
@@ -82,11 +83,12 @@ const getOrderById = async (req: Request, res: Response) => {
 };
 
 const getOrderByTrackingId = async (req: Request, res: Response) => {
+  console.log('innnn')
   try {
-    const order = await Order.findOne({ tid: req.params.tid }).populate(
+    const order = await Order.findOne({ tid: req.body.tid }).populate(
       'orderItems.product',
       '_id name'
-    );
+    ).populate('store', '_id name');
 
     if (!order) {
       return res.status(404).json({

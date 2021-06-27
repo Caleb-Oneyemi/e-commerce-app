@@ -8,7 +8,6 @@ import {
   removeStore,
   uploadStoreImage
 } from '../controllers/store-controller';
-import { parser } from '../middleware/upload-img';
 
 const router = express.Router();
 
@@ -17,7 +16,6 @@ router.post('/api/stores', isAuthenticated, createStore);
 router.post(
   '/api/stores/:storeId/image',
   isAuthenticated,
-  parser.single('image'),
   uploadStoreImage
 );
 

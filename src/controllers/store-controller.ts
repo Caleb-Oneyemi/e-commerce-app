@@ -59,12 +59,6 @@ const getStoreById = async (req: Request, res: Response) => {
       '_id fullName'
     );
 
-    if (store.merchant !== req.user._id) {
-      return res.status(403).json({
-        error: 'Merchant is not authorized to view this store',
-      });
-    }
-
     if (!store) {
       return res.status(404).json({
         error: 'Store not found',
@@ -82,14 +76,14 @@ const getStoreById = async (req: Request, res: Response) => {
 const updateStore = async (req: Request, res: Response) => {
   const updates = Object.keys(req.body);
 
+  if (updates.length === 0) {
+    return res.status(400).send({
+      error: 'At least one field must be updated',
+    });
+  }
+
   try {
     const store = await Store.findById(req.params.id);
-
-    if (store.merchant !== req.user._id) {
-      return res.status(403).json({
-        error: 'Merchant is not authorized to update this store',
-      });
-    }
 
     if (!store) {
       return res.status(404).json({
@@ -99,7 +93,9 @@ const updateStore = async (req: Request, res: Response) => {
 
     updates.forEach((field) => (store[field] = req.body[field]));
     await store.save();
-    res.status(200).json(store);
+    res.status(200).json({
+      message: 'Store updated successfully'
+    });
   } catch (err) {
     res.status(400).json({
       error: err.message,
@@ -113,12 +109,6 @@ const removeStore = async (req: Request, res: Response) => {
     if (!store) {
       return res.status(404).json({
         error: 'Store not found',
-      });
-    }
-
-    if (store.merchant !== req.user._id) {
-      return res.status(403).json({
-        error: 'Merchant is not authorized to remove this store',
       });
     }
 
@@ -141,14 +131,7 @@ const uploadStoreImage = async (req: Request, res: Response) => {
       });
     }
 
-    if (store.merchant !== req.user._id) {
-      return res.status(403).json({
-        error: 'Merchant is not authorized to upload images for this store',
-      });
-    }
-
-    const file: any = req.file;
-    store.image = file.path;
+    store.image = req.body.url;
     await store.save();
     res.status(200).json({
       message: 'store image uploaded',
@@ -163,7 +146,7 @@ const uploadStoreImage = async (req: Request, res: Response) => {
 const isStoreCustomer = async (customerId: string, storeId: string) => {
   try {
     const store = await Store.findById(storeId);
-    if (store.customers[customerId]) {
+    if (store.customers.includes(customerId)) {
       return true;
     }
     return false;

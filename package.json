@@ -8,6 +8,7 @@
     "dev": "nodemon dist/index.js"
   },
   "dependencies": {
+    "@sendgrid/mail": "^7.4.5",
     "axios": "^0.21.1",
     "bcryptjs": "^2.4.3",
     "cloudinary": "^1.26.0",

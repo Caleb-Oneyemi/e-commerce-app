@@ -2,9 +2,10 @@ import Customer from '../models/customer-model';
 import Store from '../models/store-model';
 import { isStoreCustomer } from './store-controller';
 import { decreaseProductQuantities } from './product-controller';
+import { sendMail } from '../services/email-service';
 
 const handleOrder = async (customer: any, orderData: any, storeId: string) => {
-  const { name, email, phoneNumber, address, orderItems } = orderData;
+  const { name, email, phoneNumber, address, orderItems, merchantEmail } = orderData;
 
   if (!customer) {
     await handleNewCustomerOrder(
@@ -17,6 +18,23 @@ const handleOrder = async (customer: any, orderData: any, storeId: string) => {
     );
   } else {
     await handleExistingCustomerOrder(customer, storeId, orderItems);
+  }
+
+  sendMailsOnOrder(orderData, merchantEmail, email);
+};
+
+const sendMailsOnOrder = async (orderData: any, merchantEmail: string, customerEmail: string) => {
+  const merchantSubject = 'You have a new order';
+  const merchantText = `Please visit ${process.env.URL}/api/orders/${orderData._id} to view order`;
+
+  const customerSubject = 'Thank you for buying through Maestro';
+  const customerText = `Your order tracking ID is ${orderData.tid}. Please don’t share this with anyone. Visit ${process.env.URL}/api/orders/tid and input your tracking ID to view your order status`;
+
+  try {
+    await sendMail(merchantEmail, merchantSubject, merchantText);
+    await sendMail(customerEmail, customerSubject, customerText);
+  } catch (err) {
+    throw new Error(err.message);
   }
 };
 
@@ -37,9 +55,7 @@ const handleNewCustomerOrder = async (
   });
 
   const store = await Store.findById(storeId);
-  let customers = store.customers;
-  customers[newCustomer._id] = true;
-  store.customers = customers;
+  store.customers.push(newCustomer._id);
   await newCustomer.save();
   await store.save();
   await decreaseProductQuantities(orderItems);
@@ -59,9 +75,7 @@ const handleExistingCustomerOrder = async (
   const isCustomer = await isStoreCustomer(customer._id, storeId);
   if (!isCustomer) {
     const store = await Store.findById(storeId);
-    let customers = store.customers;
-    customers[customer._id] = true;
-    store.customers = customers;
+    store.customers.push(customer._id);
     await store.save();
   }
 
