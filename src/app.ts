@@ -34,7 +34,6 @@ app.use(
 );
 app.use(cookieParser());
 app.use(helmet());
-app.use(cors());
 app.use(logger('dev'));
 
 app.use(

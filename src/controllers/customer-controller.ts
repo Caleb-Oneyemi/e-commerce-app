@@ -25,10 +25,10 @@ const handleOrder = async (customer: any, orderData: any, storeId: string) => {
 
 const sendMailsOnOrder = async (orderData: any, merchantEmail: string, customerEmail: string) => {
   const merchantSubject = 'You have a new order';
-  const merchantText = `Please visit ${process.env.URL}/api/orders/${orderData._id} to view order`;
+  const merchantText = `Please visit ${process.env.FRONTEND_URL}/order/${orderData._id} to view order`;
 
   const customerSubject = 'Thank you for buying through Maestro';
-  const customerText = `Your order tracking ID is ${orderData.tid}. Please don’t share this with anyone. Visit ${process.env.URL}/api/orders/tid and input your tracking ID to view your order status`;
+  const customerText = `Your order tracking ID is ${orderData.tid}. Please don’t share this with anyone. Visit ${process.env.FRONTEND_URL}/tid and input your tracking ID to view your order status`;
 
   try {
     await sendMail(merchantEmail, merchantSubject, merchantText);

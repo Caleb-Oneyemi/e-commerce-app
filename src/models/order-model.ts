@@ -67,6 +67,10 @@ const orderSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
+    orderTotal: {
+      type: Number,
+      required: true
+    },
     merchantEmail: {
       type: String,
       validate(email: string) {

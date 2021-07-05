@@ -48,7 +48,7 @@ const createOrder = async (req: Request, res: Response) => {
 const getOrdersByStoreId = async (req: Request, res: Response) => {
   try {
     const orders = await Order.find({ store: req.params.storeId })
-      .populate('orderItems.product', '_id name')
+      .populate('orderItems.product', '_id name price')
       .sort('createdAt')
       .limit(10)
       .skip(parseInt(req.query.skip as string));;
@@ -65,7 +65,7 @@ const getOrderById = async (req: Request, res: Response) => {
   try {
     const order = await Order.findById(req.params.id).populate(
       'orderItems.product',
-      '_id name'
+      '_id name price'
     );
 
     if (!order) {
@@ -83,7 +83,6 @@ const getOrderById = async (req: Request, res: Response) => {
 };
 
 const getOrderByTrackingId = async (req: Request, res: Response) => {
-  console.log('innnn')
   try {
     const order = await Order.findOne({ tid: req.body.tid }).populate(
       'orderItems.product',
@@ -151,7 +150,9 @@ const updateOrderStatus = async (req: Request, res: Response) => {
 
     order.status = req.body.status;
     await order.save();
-    res.status(200).json(order);
+    res.status(200).json({
+      message: 'Order Status updated successfully'
+    });
   } catch (err) {
     res.status(400).json({
       error: err.message,
