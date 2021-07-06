@@ -27,7 +27,7 @@ const createMerchant = async (req: Request, res: Response) => {
 
   try {
     const subject = 'Welcome to Maestro';
-    const text = `We're really glad to have you on board, please visit ${process.env.FRONTEND_URL}/api/users/confirm/${user._id} to confirm your mail`;
+    const text = `We're really glad to have you on board, please visit ${process.env.FRONTEND_URL}/confirm/${user._id} to confirm your mail`;
 
     await user.save();
 

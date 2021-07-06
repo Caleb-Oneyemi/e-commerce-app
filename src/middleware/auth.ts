@@ -16,13 +16,13 @@ const isAuthenticated = async (
 
     if (!user) {
       return res.status(401).json({
-        message: 'Login required',
+        error: 'Login required',
       });
     }
 
     if (!user.confirmed) {
       return res.status(401).json({
-        message: 'Account has not been confirmed',
+        error: 'Account has not been confirmed',
       });
     }
 
