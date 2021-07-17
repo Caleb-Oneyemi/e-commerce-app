@@ -22,7 +22,6 @@ const signin = async (req: Request, res: Response) => {
 
     const secret = process.env.JWT_SECRET as string;
     const token = jwt.sign({ _id: user._id }, secret);
-    console.log(token);
 
     res.cookie('mc', token, {
       maxAge: 604800000,
@@ -32,13 +31,13 @@ const signin = async (req: Request, res: Response) => {
     res.status(200).json({ user, token });
   } catch (err) {
     res.status(401).json({
-      error: err.message,
+      error: 'Error on sign',
     });
   }
 };
 
 const signout = async (req: Request, res: Response) => {
-  res.clearCookie('tc');
+  res.clearCookie('mc');
   return res.status(200).json({
     message: 'signed out successfully',
   });

@@ -19,10 +19,8 @@ const createOrder = async (req: Request, res: Response) => {
   const orderData = orderSchema.validate(req.body);
 
   if (orderData.error) {
-    const err = orderData.error.details[0].message;
-
     return res.status(400).json({
-      error: err.split('\"').join(''),
+      error: 'Invalid form input',
     });
   }
 
@@ -40,7 +38,7 @@ const createOrder = async (req: Request, res: Response) => {
     res.status(201).json(order);
   } catch (err) {
     res.status(400).json({
-      error: err.message,
+      error: 'Error on making order',
     });
   }
 };
@@ -56,7 +54,7 @@ const getOrdersByStoreId = async (req: Request, res: Response) => {
     res.status(200).json(orders);
   } catch (err) {
     res.status(400).json({
-      error: err.message,
+      error: 'Error on getting orders',
     });
   }
 };
@@ -77,7 +75,7 @@ const getOrderById = async (req: Request, res: Response) => {
     res.status(200).json(order);
   } catch (err) {
     res.status(400).json({
-      error: err.message,
+      error: 'Error on getting order',
     });
   }
 };
@@ -98,7 +96,7 @@ const getOrderByTrackingId = async (req: Request, res: Response) => {
     res.status(200).json(order);
   } catch (err) {
     res.status(400).json({
-      error: err.message,
+      error: 'Error on getting order',
     });
   }
 };
@@ -115,7 +113,7 @@ const getLatestOrderByCustomerEmail = async (req: Request, res: Response) => {
     res.status(200).json(orders[0]);
   } catch (err) {
     res.status(400).json({
-      error: err.message,
+      error: 'Error on getting order',
     });
   }
 };
@@ -133,7 +131,7 @@ const getOrdersByStatus = async (req: Request, res: Response) => {
     res.status(200).json(orders);
   } catch (err) {
     res.status(400).json({
-      error: err.message,
+      error: 'Error on getting orders',
     });
   }
 };
@@ -155,7 +153,7 @@ const updateOrderStatus = async (req: Request, res: Response) => {
     });
   } catch (err) {
     res.status(400).json({
-      error: err.message,
+      error: 'Error on updating order',
     });
   }
 };
@@ -176,7 +174,7 @@ const cancelOrder = async (req: Request, res: Response) => {
     });
   } catch (err) {
     res.status(400).json({
-      error: err.message,
+      error: 'Error on canceling order',
     });
   }
 };

@@ -12,10 +12,8 @@ const createStore = async (req: Request, res: Response) => {
   const storeData = storeSchema.validate(req.body);
 
   if (storeData.error) {
-    const err = storeData.error.details[0].message;
-
     return res.status(400).json({
-      error: err.split('\"').join(''),
+      error: 'Invalid form input',
     });
   }
 
@@ -29,7 +27,7 @@ const createStore = async (req: Request, res: Response) => {
     });
   } catch (err) {
     res.status(400).json({
-      error: err.message,
+      error: 'Error on creating new store',
     });
   }
 };
@@ -47,7 +45,7 @@ const getStoresByMerchantId = async (req: Request, res: Response) => {
     res.status(200).json(stores);
   } catch (err) {
     res.status(400).json({
-      error: err.message,
+      error: 'Error on getting stores',
     });
   }
 };
@@ -68,7 +66,7 @@ const getStoreById = async (req: Request, res: Response) => {
     res.status(200).json(store);
   } catch (err) {
     res.status(400).json({
-      error: err.message,
+      error: 'Error on getting store',
     });
   }
 };
@@ -98,7 +96,7 @@ const updateStore = async (req: Request, res: Response) => {
     });
   } catch (err) {
     res.status(400).json({
-      error: err.message,
+      error: 'Error on updating store',
     });
   }
 };
@@ -134,7 +132,7 @@ const uploadStoreImage = async (req: Request, res: Response) => {
     store.image = req.body.url;
     await store.save();
     res.status(200).json({
-      message: 'store image uploaded',
+      message: 'Store image uploaded',
     });
   } catch (err) {
     res.status(400).json({

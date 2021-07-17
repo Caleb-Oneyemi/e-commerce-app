@@ -14,13 +14,14 @@ const handleOrder = async (customer: any, orderData: any, storeId: string) => {
       phoneNumber,
       address,
       orderItems,
-      storeId
+      storeId,
+      merchantEmail
     );
   } else {
-    await handleExistingCustomerOrder(customer, storeId, orderItems);
+    await handleExistingCustomerOrder(customer, storeId, orderItems, merchantEmail);
   }
 
-  sendMailsOnOrder(orderData, merchantEmail, email);
+  await sendMailsOnOrder(orderData, merchantEmail, email);
 };
 
 const sendMailsOnOrder = async (orderData: any, merchantEmail: string, customerEmail: string) => {
@@ -44,7 +45,8 @@ const handleNewCustomerOrder = async (
   phoneNumber: string,
   address: string,
   orderItems: any,
-  storeId: string
+  storeId: string,
+  merchantEmail: string
 ) => {
   const newCustomer = new Customer({
     name,
@@ -58,13 +60,14 @@ const handleNewCustomerOrder = async (
   store.customers.push(newCustomer._id);
   await newCustomer.save();
   await store.save();
-  await decreaseProductQuantities(orderItems);
+  await decreaseProductQuantities(orderItems, merchantEmail);
 };
 
 const handleExistingCustomerOrder = async (
   customer: any,
   storeId: string,
-  orderItems: any
+  orderItems: any,
+  merchantEmail: string
 ) => {
   customer.orders.push({
     store: storeId,
@@ -80,7 +83,7 @@ const handleExistingCustomerOrder = async (
   }
 
   await customer.save();
-  await decreaseProductQuantities(orderItems);
+  await decreaseProductQuantities(orderItems, merchantEmail);
 };
 
 export { handleOrder };

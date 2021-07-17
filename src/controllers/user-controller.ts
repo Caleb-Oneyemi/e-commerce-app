@@ -16,10 +16,8 @@ const createMerchant = async (req: Request, res: Response) => {
   const userData = userSchema.validate(req.body);
 
   if (userData.error) {
-    const err = userData.error.details[0].message;
-
     return res.status(400).json({
-      error: err.split('"').join(''),
+      error: 'Invalid form input',
     });
   }
 
@@ -37,7 +35,7 @@ const createMerchant = async (req: Request, res: Response) => {
     });
   } catch (err) {
     res.status(400).json({
-      error: err.message,
+      error: 'Error on registration',
     });
   }
 };
@@ -59,13 +57,14 @@ const getMerchantById = async (req: Request, res: Response) => {
     res.status(200).json({ email: user.email });
   } catch (err) {
     res.status(400).json({
-      error: err.message,
+      error: 'Error getting user details',
     });
   }
 };
 
 const updateMerchant = async (req: Request, res: Response) => {
   const updates = Object.keys(req.body);
+
   if (updates.length === 0) {
     return res.status(400).send({
       error: 'At least one field must be updated',
@@ -85,7 +84,7 @@ const updateMerchant = async (req: Request, res: Response) => {
     });
   } catch (err) {
     res.status(400).json({
-      error: err.message,
+      error: 'Error updating user details',
     });
   }
 };
@@ -106,7 +105,7 @@ const changePassword = async (req: Request, res: Response) => {
 
   if (!oldPassword || !newPassword || !confirmedPassword) {
     return res.status(401).json({
-      error: 'fields cannot be epmty',
+      error: 'fields cannot be empty',
     });
   }
 
@@ -133,7 +132,7 @@ const changePassword = async (req: Request, res: Response) => {
     });
   } catch (err) {
     res.status(400).send({
-      error: err.message,
+      error: 'Error on changing passwrod',
     });
   }
 };
@@ -163,7 +162,7 @@ const confirmMerchant = async (req: Request, res: Response) => {
     });
   } catch (err) {
     res.status(400).send({
-      error: err.message,
+      error: 'Error confirming user account',
     });
   }
 };

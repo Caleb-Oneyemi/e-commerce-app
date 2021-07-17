@@ -14,11 +14,18 @@ const productSchema = new mongoose.Schema(
     },
     quantity: {
       type: Number,
+      min: 0,
       required: 'Quantity is required',
     },
     price: {
       type: Number,
+      min: 0,
       required: 'Price is required',
+    },
+    limit: {
+      type: Number,
+      min: 0,
+      default: 0
     },
     image: {
       type: String,

@@ -12,6 +12,7 @@ const isAuthenticated = async (
 
   try {
     const decoded = jwt.verify(token, secret) as { _id: string };
+
     const user = await User.findById(decoded._id).select('-password');
 
     if (!user) {
