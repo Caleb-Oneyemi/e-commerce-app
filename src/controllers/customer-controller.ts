@@ -7,21 +7,25 @@ import { sendMail } from '../services/email-service';
 const handleOrder = async (customer: any, orderData: any, storeId: string) => {
   const { name, email, phoneNumber, address, orderItems, merchantEmail } = orderData;
 
-  if (!customer) {
-    await handleNewCustomerOrder(
-      name,
-      email,
-      phoneNumber,
-      address,
-      orderItems,
-      storeId,
-      merchantEmail
-    );
-  } else {
-    await handleExistingCustomerOrder(customer, storeId, orderItems, merchantEmail);
-  }
+  try {
+    if (!customer) {
+      await handleNewCustomerOrder(
+        name,
+        email,
+        phoneNumber,
+        address,
+        orderItems,
+        storeId,
+        merchantEmail
+      );
+    } else {
+      await handleExistingCustomerOrder(customer, storeId, orderItems, merchantEmail);
+    }
 
-  await sendMailsOnOrder(orderData, merchantEmail, email);
+    await sendMailsOnOrder(orderData, merchantEmail, email);
+  } catch(err) {
+    console.log(err.message);
+  }
 };
 
 const sendMailsOnOrder = async (orderData: any, merchantEmail: string, customerEmail: string) => {

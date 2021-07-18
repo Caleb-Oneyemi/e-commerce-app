@@ -12,7 +12,8 @@ const orderSchema = Joi.object({
   phoneNumber: Joi.string().length(14).required(),
   address: Joi.string().required(),
   orderItems: Joi.array().required(),
-  merchantEmail: Joi.string()
+  merchantEmail: Joi.string(),
+  orderTotal: Joi.number()
 });
 
 const createOrder = async (req: Request, res: Response) => {
@@ -38,7 +39,7 @@ const createOrder = async (req: Request, res: Response) => {
     res.status(201).json(order);
   } catch (err) {
     res.status(400).json({
-      error: 'Error on making order',
+      error: err.message,
     });
   }
 };

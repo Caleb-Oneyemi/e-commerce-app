@@ -19,7 +19,7 @@ router.post(
   uploadProductImage
 );
 
-router.get('/api/products/store/:storeId', isAuthenticated, getProductsByStoreId);
+router.get('/api/products/store/:storeId', getProductsByStoreId);
 
 router.get('/api/products/:id', getProductById);
 

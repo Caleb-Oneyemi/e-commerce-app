@@ -21,7 +21,7 @@ router.post(
 
 router.get('/api/stores', isAuthenticated, getStoresByMerchantId);
 
-router.get('/api/stores/:id', isAuthenticated, getStoreById);
+router.get('/api/stores/:id', getStoreById);
 
 router.patch('/api/stores/:id', isAuthenticated, updateStore);
 
