@@ -17,7 +17,7 @@ const createMerchant = async (req: Request, res: Response) => {
 
   if (userData.error) {
     return res.status(400).json({
-      error: 'Invalid form input',
+      error: userData.error.details[0].message,
     });
   }
 

@@ -20,7 +20,7 @@ connectDB();
 declare module 'express' {
   export interface Request {
     user?: any;
-    store?: any;
+    stores?: any;
   }
 }
 

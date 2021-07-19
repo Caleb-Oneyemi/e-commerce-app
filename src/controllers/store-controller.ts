@@ -13,7 +13,7 @@ const createStore = async (req: Request, res: Response) => {
 
   if (storeData.error) {
     return res.status(400).json({
-      error: 'Invalid form input',
+      error: storeData.error.details[0].message,
     });
   }
 
@@ -72,6 +72,12 @@ const getStoreById = async (req: Request, res: Response) => {
 };
 
 const updateStore = async (req: Request, res: Response) => {
+  if(!req.stores.includes(req.params.id)) {
+    return res.status(400).json({
+      error: 'You are not authorized to perform this operation',
+    });
+  }
+
   const updates = Object.keys(req.body);
 
   if (updates.length === 0) {
@@ -103,7 +109,14 @@ const updateStore = async (req: Request, res: Response) => {
 
 const removeStore = async (req: Request, res: Response) => {
   try {
+    if(!req.stores.includes(req.params.id)) {
+      return res.status(400).json({
+        error: 'You are not authorized to perform this operation',
+      });
+    }
+
     const store = await Store.findById(req.params.id);
+
     if (!store) {
       return res.status(404).json({
         error: 'Store not found',

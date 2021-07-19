@@ -18,7 +18,7 @@ const createProduct = async (req: Request, res: Response) => {
 
   if (productData.error) {
     return res.status(400).json({
-      error: 'Invalid form input',
+      error: productData.error.details[0].message,
     });
   }
 
@@ -92,6 +92,12 @@ const updateProduct = async (req: Request, res: Response) => {
     if (!product) {
       return res.status(404).json({
         error: 'Product not found',
+      });
+    }
+
+    if(String(req.user._id) !== String(product.merchant)) {
+      return res.status(404).json({
+        error: 'You are not permitted to edit this Product',
       });
     }
 

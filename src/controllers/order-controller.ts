@@ -21,7 +21,7 @@ const createOrder = async (req: Request, res: Response) => {
 
   if (orderData.error) {
     return res.status(400).json({
-      error: 'Invalid form input',
+      error: orderData.error.details[0].message,
     });
   }
 
