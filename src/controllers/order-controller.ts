@@ -125,6 +125,7 @@ const getOrdersByStatus = async (req: Request, res: Response) => {
       status: req.body.status,
       store: req.params.storeId,
     })
+      .populate('orderItems.product', '_id name price')
       .sort('createdAt')
       .limit(10)
       .skip(parseInt(req.query.skip as string));;
