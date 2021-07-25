@@ -37,8 +37,8 @@ const userSchema = new mongoose.Schema(
     phoneNumber: {
       type: String,
       validate(num: string) {
-        if (!validator.isMobilePhone(num, ['en-NG'], { strictMode: true })) {
-          throw new Error('Phone number must be valid and start with +234');
+        if (!validator.isMobilePhone(num)) {
+          throw new Error('Phone number must be valid');
         }
       },
     },

@@ -8,7 +8,7 @@ const userSchema = Joi.object({
   firstName: Joi.string().min(3).max(30).required(),
   lastName: Joi.string().min(3).max(30).required(),
   email: Joi.string().email().required(),
-  phoneNumber: Joi.string().length(14).required(),
+  phoneNumber: Joi.string().required(),
   password: Joi.string().min(3).max(30).alphanum().required(),
 });
 
